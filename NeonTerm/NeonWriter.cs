@@ -6,33 +6,18 @@
 
     class NeonWriter
     {
-        private ICharWriter charWriter;
+        private ILineWriter lineWriter;
 
         private ConcurrentQueue<string> lines = new ConcurrentQueue<string>();
 
-        public NeonWriter(ICharWriter charWriter)
+        public NeonWriter(ILineWriter lineWriter)
         {
-            this.charWriter = charWriter ?? throw new ArgumentNullException(nameof(charWriter));
+            this.lineWriter = lineWriter ?? throw new ArgumentNullException(nameof(lineWriter));
         }
 
         public void WriteLine(string line)
         {
             lines.Enqueue(line);
-        }
-
-        private void SendLine(string line, CancellationToken cancellationToken)
-        {
-            foreach(var c in line)
-            {
-                if(cancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-                else 
-                {                 
-                    charWriter.WriteChar(c);
-                }
-            }
         }
 
         public void Start(CancellationToken cancellationToken)
@@ -43,7 +28,7 @@
                 var success = lines.TryDequeue(out line);
                 if (success)
                 {
-                    this.SendLine(line, cancellationToken);
+                    this.lineWriter.WriteLine(line);
                 }
             }
 

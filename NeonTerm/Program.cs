@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-using System;
+﻿using System;
 using System.IO.Ports;
+using System.Threading.Tasks;
 
 namespace NeonTerm
 {
@@ -12,7 +12,22 @@ namespace NeonTerm
 
             PrintPortNames();
 
-            var serialPort = new SerialPort("com1", 9600, Parity.None, 8, StopBits.One);
+            var neonSerial = new NeonSerial("com1");
+            var neonReader = new NeonReader(neonSerial);
+            var neonWriter = new NeonWriter(neonSerial);
+
+            var cancellationToken = neonReader.CancellationToken;
+
+            var readTask = Task.Factory.StartNew(() => neonReader.Start());
+            var writeTask = Task.Factory.StartNew(() => neonWriter.Start(cancellationToken));
+
+            Task.WaitAll(readTask, writeTask);
+
+            while(false == cancellationToken.IsCancellationRequested)
+            {
+                var line = Console.In.ReadLine();
+                neonWriter.WriteLine(line);
+            }
         }
 
         public static void PrintPortNames()

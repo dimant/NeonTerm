@@ -8,7 +8,7 @@
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        public CancellationTokenSource CancellationTokenSource => cancellationTokenSource;
+        public CancellationToken CancellationToken => cancellationTokenSource.Token;
 
         private ILineReader lineReader;
 
@@ -21,7 +21,7 @@
 
         public bool MatchesError(string line)
         {
-            return false;
+            return line.Contains("Unknown token:");
         }
 
         public string ReadLine()
@@ -32,7 +32,7 @@
             {
                 if (this.MatchesError(line))
                 {
-                    CancellationTokenSource.Cancel();
+                    this.cancellationTokenSource.Cancel();
                     return string.Empty;
                 }
 
@@ -46,7 +46,7 @@
 
         public void Start()
         {
-            while(false == cancellationTokenSource.Token.IsCancellationRequested)
+            while(false == this.CancellationToken.IsCancellationRequested)
             {
                 this.lines.Enqueue(lineReader.ReadLine());
             }
