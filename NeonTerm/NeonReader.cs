@@ -8,11 +8,13 @@
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        public CancellationToken CancellationToken => cancellationTokenSource.Token;
-
         private ILineReader lineReader;
 
         private ConcurrentQueue<string> lines = new ConcurrentQueue<string>();
+
+        public CancellationToken CancellationToken => cancellationTokenSource.Token;
+
+        public Action OnLineAvailable { get; set; }
 
         public NeonReader(ILineReader lineReader)
         {
@@ -48,7 +50,8 @@
         {
             while(false == this.CancellationToken.IsCancellationRequested)
             {
-                this.lines.Enqueue(lineReader.ReadLine());
+                this.lines.Enqueue(this.lineReader.ReadLine());
+                this.OnLineAvailable?.Invoke();
             }
         }
     }
