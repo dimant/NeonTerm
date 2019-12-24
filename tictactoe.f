@@ -1,3 +1,6 @@
+( inspired by https://marketplace.visualstudio.com/items?itemName=fttx.language-forth )
+( Run CLEAR DISPLAY to begin playing. )
+
 CREATE BOARD 9 ALLOT
 
 : SQUARE ( square# -- addr) BOARD + ;
