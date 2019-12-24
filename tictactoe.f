@@ -16,7 +16,7 @@ CREATE BOARD 9 ALLOT
 
 : .BOX ( square# -- )
     DUP SQUARE C@ DUP 0= IF
-        OVER 1+ . ELSE
+        OVER 1+ . DROP ELSE
         DUP 1 = IF
             ." X " ELSE
             ." O "
