@@ -9,9 +9,11 @@ immediately.
 ## Setup
 The terminal is written in dotnet core so it should work on all platforms but it was tested only on Windows. The recommended workflow
 is:
-1. Get [Visual Studio Code](https://code.visualstudio.com/)
-2. Get the [Macros](https://marketplace.visualstudio.com/items?itemName=geddski.macros) extension.
-3. Setup a macros to send single lines and selections to the VSCode terminal window.
+1. Install the [.Net Core SDK](https://dotnet.microsoft.com/download)
+2. Build Neon term by typing `dotnet build` in the folder containing `NeonTerm.sln`
+3. Get [Visual Studio Code](https://code.visualstudio.com/)
+4. Get the [Macros](https://marketplace.visualstudio.com/items?itemName=geddski.macros) extension.
+5. Setup a macros to send single lines and selections to the VSCode terminal window.
 
 My "send line" macro looks like this:
 
