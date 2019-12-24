@@ -14,7 +14,7 @@ is:
 3. Get [Visual Studio Code](https://code.visualstudio.com/)
 4. Get the [Macros](https://marketplace.visualstudio.com/items?itemName=geddski.macros) extension.
 5. Setup a macros to send single lines and selections to the VSCode terminal window.
-6. Optionally install [Fort syntax highlighting](https://marketplace.visualstudio.com/items?itemName=fttx.language-forth)
+6. Optionally install [Forth syntax highlighting](https://marketplace.visualstudio.com/items?itemName=fttx.language-forth)
 
 My "send line" macro looks like this:
 
