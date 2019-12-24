@@ -4,10 +4,8 @@
     using System;
     using System.IO.Ports;
     using System.Linq;
-    using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
-    
+
     class Program
     {
         static void Main(string[] args)
@@ -60,7 +58,8 @@
                 var cancellationToken = neonReader.CancellationToken;
 
                 var readTask = Task.Factory.StartNew(() => neonReader.Start());
-                var writeTask = Task.Factory.StartNew(() => 
+                var writeTask = Task.Factory.StartNew(() => neonWriter.Start(cancellationToken));
+                var consoleWriteTask = Task.Factory.StartNew(() => 
                 {
                     while(false == cancellationToken.IsCancellationRequested)
                     {
@@ -68,7 +67,13 @@
                         {
                             var keyInfo = Console.ReadKey(intercept: true);
                             var c = keyInfo.KeyChar;
-                            neonWriter.WriteChar(c, cancellationToken);
+
+                            if(c == '\r')
+                            {
+                                c = '\n';
+                            }
+
+                            neonWriter.WriteChar(c);
                         }
                         else
                         {
@@ -82,7 +87,7 @@
                     Console.Out.Write(c);
                 };
 
-                Task.WaitAll(readTask, writeTask);
+                Task.WaitAll(readTask, writeTask, consoleWriteTask);
             }
 
             return 1;
