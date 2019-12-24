@@ -5,10 +5,8 @@
     using System.Linq;
     using System.Threading;
 
-    class NeonSerial : ILineWriter, ILineReader, IDisposable
+    class NeonSerial : ICharWriter, ICharReader, IDisposable
     {
-        private const int msPerLine = 150;
-        
         private readonly SerialPort serialPort;
 
         private bool disposed = false;
@@ -26,9 +24,14 @@
             }
 
             // the port settings are Neon specific
-            this.serialPort = new SerialPort(port, 9600, Parity.None, 8, StopBits.None);
+            this.serialPort = new SerialPort(port, 9600, Parity.None, 8, StopBits.One);
             this.serialPort.ReadTimeout = 250; // ms
             this.serialPort.WriteTimeout = 500; //ms
+        }
+
+        public void Open()
+        {
+            this.serialPort.Open();
         }
 
         public void Dispose()
@@ -60,23 +63,24 @@
             return ports.Contains(port);
         }
 
-        public string ReadLine()
+        public char? ReadChar()
         {
             try
             {
-                string line = this.serialPort.ReadLine();
-                return line;
+                int i = this.serialPort.ReadChar();
+                char c = Convert.ToChar(i);
+                return c;
             }
             catch (TimeoutException)
             {
-                return string.Empty;
+                return null;
             }
         }
 
-        public void WriteLine(string line)
+        public void WriteChar(char c)
         {
-            this.serialPort.WriteLine(line);
-            Thread.Sleep(msPerLine);
+            byte b = Convert.ToByte(c);
+            this.serialPort.Write(new byte[] { b }, 0, 1);
         }
     }
 }

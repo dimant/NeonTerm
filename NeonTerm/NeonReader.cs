@@ -1,57 +1,50 @@
 ﻿namespace NeonTerm
 {
     using System;
-    using System.Collections.Concurrent;
+    using System.Text;
     using System.Threading;
 
     class NeonReader
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        private ILineReader lineReader;
+        private ICharReader charReader;
 
-        private ConcurrentQueue<string> lines = new ConcurrentQueue<string>();
+        private StringBuilder lineBuilder = new StringBuilder();
 
         public CancellationToken CancellationToken => cancellationTokenSource.Token;
 
-        public Action OnLineAvailable { get; set; }
+        public Action<char> OnCharAvailable { get; set; }
 
-        public NeonReader(ILineReader lineReader)
+        public NeonReader(ICharReader charReader)
         {
-            this.lineReader = lineReader ?? throw new ArgumentNullException(nameof(lineReader));
+            this.charReader = charReader ?? throw new ArgumentNullException(nameof(charReader));
         }
 
         public bool MatchesError(string line)
         {
-            return line.Contains("Unknown token:");
-        }
-
-        public string ReadLine()
-        {
-            string line;
-            var success = lines.TryDequeue(out line);
-            if (success)
-            {
-                if (this.MatchesError(line))
-                {
-                    this.cancellationTokenSource.Cancel();
-                    return string.Empty;
-                }
-
-                return line;
-            }
-            else
-            {
-                return string.Empty;
-            }
+            return line.Contains("Unknown Token:");
         }
 
         public void Start()
         {
             while(false == this.CancellationToken.IsCancellationRequested)
             {
-                this.lines.Enqueue(this.lineReader.ReadLine());
-                this.OnLineAvailable?.Invoke();
+                var c = this.charReader.ReadChar();
+                if(null != c)
+                {
+                    lineBuilder.Append(c);
+                    this.OnCharAvailable?.Invoke(c.Value);
+
+                    if(c == '\n')
+                    {
+                        var line = this.lineBuilder.ToString();
+                        if (this.MatchesError(line))
+                        {
+                            this.cancellationTokenSource.Cancel();
+                        }
+                    }
+                }
             }
         }
     }

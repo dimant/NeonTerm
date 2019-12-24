@@ -1,38 +1,33 @@
 ﻿namespace NeonTerm
 {
     using System;
-    using System.Collections.Concurrent;
+    using System.Text;
     using System.Threading;
+    using System.Threading.Tasks;
 
     class NeonWriter
     {
-        private ILineWriter lineWriter;
+        private readonly TimeSpan msPerLine = TimeSpan.FromMilliseconds(150);
 
-        private ConcurrentQueue<string> lines = new ConcurrentQueue<string>();
+        private ICharWriter charWriter;
 
-        public NeonWriter(ILineWriter lineWriter)
+        private StringBuilder line = new StringBuilder();
+
+        public NeonWriter(ICharWriter lineWriter)
         {
-            this.lineWriter = lineWriter ?? throw new ArgumentNullException(nameof(lineWriter));
+            this.charWriter = lineWriter ?? throw new ArgumentNullException(nameof(lineWriter));
         }
 
-        public void WriteLine(string line)
+        public void WriteChar(char c, CancellationToken cancellationToken)
         {
-            lines.Enqueue(line);
-        }
+            line.Append(c);
+            this.charWriter.WriteChar(c);
 
-        public void Start(CancellationToken cancellationToken)
-        {
-            while(!cancellationToken.IsCancellationRequested)
+            if(true == this.line.ToString().EndsWith(Environment.NewLine))
             {
-                string line;
-                var success = lines.TryDequeue(out line);
-                if (success)
-                {
-                    this.lineWriter.WriteLine(line);
-                }
+                line.Clear();
+                Task.Delay(msPerLine, cancellationToken);
             }
-
-            lines.Clear();
         }
     }
 }

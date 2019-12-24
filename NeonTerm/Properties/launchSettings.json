@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NeonTerm": {
+      "commandName": "Project",
+      "commandLineArgs": "-p com3"
+    }
+  }
+}

@@ -3,6 +3,9 @@
     using Microsoft.Extensions.CommandLineUtils;
     using System;
     using System.IO.Ports;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     
     class Program
@@ -25,7 +28,7 @@
             {
                 if (portOption.HasValue())
                 {
-                    var portName = portOption.Value();
+                    var portName = portOption.Value().ToUpper();
                     if (false == ValidatePortName(portName))
                     {
                         return 1;
@@ -41,34 +44,45 @@
                     return 1;
                 }
             });
+
+            commandLineApplication.Execute(args);
         }
 
         public static int StartTerminalLoop(string portName)
         {
             using (var neonSerial = new NeonSerial(portName))
             {
+                neonSerial.Open();
+
                 var neonReader = new NeonReader(neonSerial);
                 var neonWriter = new NeonWriter(neonSerial);
 
                 var cancellationToken = neonReader.CancellationToken;
 
                 var readTask = Task.Factory.StartNew(() => neonReader.Start());
-                var writeTask = Task.Factory.StartNew(() => neonWriter.Start(cancellationToken));
-                
-                neonReader.OnLineAvailable = () => 
-                    Console.Out.WriteLine(neonReader.ReadLine());
-
-                var consoleReaderTask = Task.Factory.StartNew(() =>
+                var writeTask = Task.Factory.StartNew(() => 
                 {
-
-                    while (false == cancellationToken.IsCancellationRequested)
+                    while(false == cancellationToken.IsCancellationRequested)
                     {
-                        var line = Console.In.ReadLine();
-                        neonWriter.WriteLine(line);
+                        if (Console.KeyAvailable)
+                        {
+                            var keyInfo = Console.ReadKey(intercept: true);
+                            var c = keyInfo.KeyChar;
+                            neonWriter.WriteChar(c, cancellationToken);
+                        }
+                        else
+                        {
+                            Task.Delay(10, cancellationToken);
+                        }
                     }
                 });
 
-                Task.WaitAll(readTask, writeTask, consoleReaderTask);
+                neonReader.OnCharAvailable = (c) =>
+                {
+                    Console.Out.Write(c);
+                };
+
+                Task.WaitAll(readTask, writeTask);
             }
 
             return 1;
@@ -78,7 +92,7 @@
         {
             var portNames = SerialPort.GetPortNames();
 
-            if(false == portName.Contains(portName))
+            if(false == portNames.Contains(portName))
             {
                 Console.Out.WriteLine($"Port {portName} is not available. Available ports:");
 
