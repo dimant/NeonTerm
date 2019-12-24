@@ -12,23 +12,7 @@ is:
 1. Install the [.Net Core SDK](https://dotnet.microsoft.com/download)
 2. Build NeonTerm by typing `dotnet build` in the folder containing `NeonTerm.sln`
 3. Get [Visual Studio Code](https://code.visualstudio.com/)
-4. Get the [Macros](https://marketplace.visualstudio.com/items?itemName=geddski.macros) extension.
-5. Setup a macros to send single lines and selections to the VSCode terminal window.
-6. Optionally install [Forth syntax highlighting](https://marketplace.visualstudio.com/items?itemName=fttx.language-forth)
-
-My "send line" macro looks like this:
-
-```
-    "macros": {
-        "execCurLn": [
-            "expandLineSelection",
-            "workbench.action.terminal.runSelectedText",
-            "cancelSelection"
-        ]
-    },
-```
-
-Put this in your VSCode `settings.json` file (File | Preferences | Settings | Open Settings JSON - top right corner).
+4. Optionally install [Forth syntax highlighting](https://marketplace.visualstudio.com/items?itemName=fttx.language-forth)
 
 A few keybindings make interacting with the terminal a little more convenient:
 
@@ -38,15 +22,12 @@ A few keybindings make interacting with the terminal a little more convenient:
           "command": "workbench.action.terminal.runSelectedText",
             "when": "editorTextFocus && editorHasSelection"
     },
-    {
-        "key": "ctrl+enter",
-          "command": "macros.execCurLn",
-            "when": "editorTextFocus && !editorHasSelection"
-    },
     { "key": "ctrl+`", "command": "workbench.action.terminal.focus"},
     { "key": "ctrl+`", "command": "workbench.action.focusActiveEditorGroup", "when": "terminalFocus"}
 ```
 
 These go in the VSCode `keybindings.json` file (File | Preferences | Keyboard Shortcuts | Open Keyboard Shortcuts JSON - top right corner.)
+
+With this bindings you can send the selected text to the term by pressing Ctrl+Enter. To send a single line, place your cursor on the line you want to send, press Ctrl+L to extend the selection to the line followed by Ctrl+Enter to send.
 
 You can open a VSCode terminal window either by going to View | Terminal or by pressing Ctrl + `.
