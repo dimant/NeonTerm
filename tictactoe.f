@@ -8,7 +8,6 @@ CREATE BOARD 9 ALLOT
 : BAR ." | " ;
 : DASH 45 EMIT ;
 : DASHES CR 9 0 DO DASH LOOP CR ;
-: SPACE 32 EMIT ;
 : SPACES ( n -- ) 0 DO SPACE LOOP ;
 : MOD ( a b -- m ) 0 SWAP UM/MOD DROP ;
 
