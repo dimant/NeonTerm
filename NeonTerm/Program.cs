@@ -12,17 +12,22 @@
         {
             /// command line parsing: https://docs.microsoft.com/en-us/archive/msdn-magazine/2016/september/essential-net-command-line-processing-with-net-core-1-0
 
-            var commandLineApplication = new CommandLineApplication(throwOnUnexpectedArg: false);
+            var app = new CommandLineApplication(throwOnUnexpectedArg: false);
 
-            var portOption = commandLineApplication.Option(
+            var portOption = app.Option(
                 "-p|--port",
                 "The serial port to which the Neon816 is connected.",
                 CommandOptionType.SingleValue
                 );
 
-            commandLineApplication.HelpOption("-?|-h|--help");
+            var debugOption = app.Option(
+                "-d|--debug",
+                "Debug over 3.3V UART connection.",
+                CommandOptionType.NoValue);
 
-            commandLineApplication.OnExecute(() =>
+            app.HelpOption("-?|-h|--help");
+
+            app.OnExecute(() =>
             {
                 if (portOption.HasValue())
                 {
@@ -31,24 +36,42 @@
                     {
                         return 1;
                     }
+
+                    if (debugOption.HasValue())
+                    {
+                        return StartDebugLoop(portName);
+                    }
                     else
                     {
-                        return StartTerminalLoop(portName);
+                        return StartForthLoop(portName);
                     }
                 }
                 else
                 {
-                    commandLineApplication.ShowHelp();
+                    app.ShowHelp();
                     return 1;
                 }
             });
 
-            commandLineApplication.Execute(args);
+            app.Execute(args);
         }
 
-        public static int StartTerminalLoop(string portName)
+        public static int StartDebugLoop(string portName)
         {
-            using (var neonSerial = new NeonSerial(portName))
+            using (var neonSerial = new NeonSerial(portName, NeonSerial.Profile.Debug))
+            {
+                neonSerial.Open();
+
+                neonSerial.WriteChar(']');
+                neonSerial.WriteChar('R');
+                neonSerial.WriteChar('[');
+            }
+            return 0;
+        }
+
+        public static int StartForthLoop(string portName)
+        {
+            using (var neonSerial = new NeonSerial(portName, NeonSerial.Profile.Forth))
             {
                 neonSerial.Open();
 
@@ -59,16 +82,16 @@
 
                 var readTask = Task.Factory.StartNew(() => neonReader.Start());
                 var writeTask = Task.Factory.StartNew(() => neonWriter.Start(cancellationToken));
-                var consoleWriteTask = Task.Factory.StartNew(() => 
+                var consoleWriteTask = Task.Factory.StartNew(() =>
                 {
-                    while(false == cancellationToken.IsCancellationRequested)
+                    while (false == cancellationToken.IsCancellationRequested)
                     {
                         if (Console.KeyAvailable)
                         {
                             var keyInfo = Console.ReadKey(intercept: true);
                             var c = keyInfo.KeyChar;
 
-                            if(c == '\r')
+                            if (c == '\r')
                             {
                                 c = '\n';
                             }
@@ -97,13 +120,13 @@
         {
             var portNames = SerialPort.GetPortNames();
 
-            if(false == portNames.Contains(portName))
+            if (false == portNames.Contains(portName))
             {
                 Console.Out.WriteLine($"Port {portName} is not available. Available ports:");
 
-                foreach(var pN in portNames)
+                foreach (var pN in portNames)
                 {
-                    Console.Out.WriteLine(portName);
+                    Console.Out.WriteLine(pN);
                 }
 
                 return false;

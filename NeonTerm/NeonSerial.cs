@@ -7,24 +7,42 @@
 
     class NeonSerial : ICharWriter, ICharReader, IDisposable
     {
+        public enum Profile
+        {
+            Forth,
+            Debug
+        };
+
         private readonly SerialPort serialPort;
 
         private bool disposed = false;
 
-        public NeonSerial(string port)
+        public NeonSerial(string port, Profile profile)
         {
-            if(string.IsNullOrEmpty(port))
+            if (string.IsNullOrEmpty(port))
             {
                 throw new ArgumentNullException(nameof(port));
             }
 
-            if(false == this.IsValidPort(port))
+            if (false == this.IsValidPort(port))
             {
                 throw new ArgumentOutOfRangeException(nameof(port));
             }
 
+            int speed = 0;
+
+            switch (profile)
+            {
+                case Profile.Forth:
+                    speed = 9600;
+                    break;
+                case Profile.Debug:
+                    speed = 57600;
+                    break;
+            }
+
             // the port settings are Neon specific
-            this.serialPort = new SerialPort(port, 9600, Parity.None, 8, StopBits.One);
+            this.serialPort = new SerialPort(port, speed, Parity.None, 8, StopBits.One);
             this.serialPort.ReadTimeout = 250; // ms
             this.serialPort.WriteTimeout = 500; //ms
         }
