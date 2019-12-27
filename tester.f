@@ -25,9 +25,10 @@ CREATE ACTUAL-RESULTS 20 CELLS ALLOT
    DEPTH ?DUP IF DUP 0< IF NEGATE 0 DO 0 LOOP ELSE 0 DO DROP LOOP THEN THEN ;
 
 : ERROR      \ ( ... -- )
-   ." IN TEST " CURRENT-TEST @ .
+   ." IN TEST" SPACE CURRENT-TEST @ .
    EMPTY-STACK               \ THROW AWAY EVERY THING ELSE
    #ERRORS @ 1 + #ERRORS !
+   0 CURRENT-TEST !
    QUIT  \ *** Uncomment this line to QUIT on an error
 ;
 
