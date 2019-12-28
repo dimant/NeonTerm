@@ -56,7 +56,7 @@ CREATE PAT-NUM 2 , '(lit) , DOES> @ ;
 : CONSUME-STRING ( addr - n )
     DUP @ '(.") = IF
         CELL + DUP 
-        2E EMIT 22 EMIT SPACE TYPE 22 EMIT 
+        2E EMIT 22 EMIT SPACE TYPE 22 EMIT SPACE
         STRLEN 1+ CELL +
     ELSE
         DROP 0
