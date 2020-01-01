@@ -2,7 +2,7 @@
   "profiles": {
     "NeonTerm": {
       "commandName": "Project",
-      "commandLineArgs": "-p com4 -d"
+      "commandLineArgs": "-p com3 -f d:\\src\\neonterm\\decompiler.f"
     }
   }
 }

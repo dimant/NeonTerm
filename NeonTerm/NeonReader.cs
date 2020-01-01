@@ -26,6 +26,11 @@
             return line.Contains("Unknown Token:");
         }
 
+        public void Cancel()
+        {
+            this.cancellationTokenSource.Cancel();
+        }
+
         public void Start()
         {
             while(false == this.CancellationToken.IsCancellationRequested)
@@ -41,6 +46,8 @@
                         var line = this.lineBuilder.ToString();
                         if (this.MatchesError(line))
                         {
+                            Console.Error.WriteLine($"NeonTerm: {line}");
+
                             this.cancellationTokenSource.Cancel();
                         }
                     }

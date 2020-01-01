@@ -2,8 +2,11 @@
 {
     using Microsoft.Extensions.CommandLineUtils;
     using System;
+    using System.Collections.Generic;
+    using System.IO;
     using System.IO.Ports;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     class Program
@@ -16,13 +19,17 @@
 
             var portOption = app.Option(
                 "-p|--port",
-                "The serial port to which the Neon816 is connected.",
-                CommandOptionType.SingleValue
-                );
+                "[required] The serial port to which the Neon816 is connected.",
+                CommandOptionType.SingleValue);
+
+            var fileOption = app.Option(
+                "-f|--file",
+                "Send a file to the serial port on which the Neon816 is connected.",
+                CommandOptionType.MultipleValue);
 
             var debugOption = app.Option(
-                "-d|--debug",
-                "Debug over 3.3V UART connection.",
+                "-r|--reset",
+                "Send reset command over 3.3V UART connector.",
                 CommandOptionType.NoValue);
 
             app.HelpOption("-?|-h|--help");
@@ -37,7 +44,17 @@
                         return 1;
                     }
 
-                    if (debugOption.HasValue())
+                    if (fileOption.HasValue())
+                    {
+                        var fileNames = fileOption.Values;
+                        if(false == ValidateFileNames(fileNames))
+                        {
+                            return 1;
+                        }
+
+                        return StartFilesLoop(portName, fileNames);
+                    }
+                    else if (debugOption.HasValue())
                     {
                         return StartDebugLoop(portName);
                     }
@@ -69,6 +86,50 @@
             return 0;
         }
 
+        public static int StartFilesLoop(string portName, IEnumerable<string> fileNames)
+        {
+            using (var neonSerial = new NeonSerial(portName, NeonSerial.Profile.Forth))
+            {
+                neonSerial.Open();
+
+                var neonReader = new NeonReader(neonSerial);
+                var neonWriter = new NeonWriter(neonSerial);
+
+                var filterComment = new FilterComment();
+                neonWriter.AddFilter(filterComment);
+
+                var filterCR = new FilterCR();
+                neonWriter.AddFilter(filterCR);
+
+                var cancellationToken = neonReader.CancellationToken;
+
+                var readTask = Task.Factory.StartNew(() => neonReader.Start());
+                var writeTask = Task.Factory.StartNew(() => neonWriter.Start(cancellationToken));
+
+                neonReader.OnCharAvailable = (c) =>
+                {
+                    Console.Out.Write(c);
+                };
+
+                foreach(var fileName in fileNames)
+                {
+                    using (var reader = new StreamReader(fileName))
+                    {
+                        do
+                        {
+                            var c = (char) reader.Read();
+                            neonWriter.WriteChar(c);
+                        } while (false == reader.EndOfStream);
+                    }
+                }
+
+                neonWriter.WaitOnQueueDrained(cancellationToken);
+                neonReader.Cancel();
+            }
+
+            return 0;
+        }
+
         public static int StartForthLoop(string portName)
         {
             using (var neonSerial = new NeonSerial(portName, NeonSerial.Profile.Forth))
@@ -77,6 +138,9 @@
 
                 var neonReader = new NeonReader(neonSerial);
                 var neonWriter = new NeonWriter(neonSerial);
+
+                var filterComment = new FilterComment();
+                neonWriter.AddFilter(filterComment);
 
                 var cancellationToken = neonReader.CancellationToken;
 
@@ -114,6 +178,20 @@
             }
 
             return 1;
+        }
+
+        public static bool ValidateFileNames(IEnumerable<string> fileNames)
+        {
+            foreach(var fileName in fileNames)
+            {
+                if (false == File.Exists(fileName))
+                {
+                    Console.Out.WriteLine($"File does not exist: {fileName}");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static bool ValidatePortName(string portName)
