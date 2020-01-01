@@ -4,7 +4,15 @@
     LOOP
     DROP DROP ;
 
+: CELL+ CELL + ;
+
+: 2! SWAP OVER ! CELL+ ! ;
+
+: 2@ DUP CELL+ @ SWAP @ ;
+
 : MOD ( a b -- m ) 0 SWAP UM/MOD ; ( 16bit mod operation )
+
+\ DECIMAL
 
 : 4BITHEX ( a -- c )
     DUP 9 > IF 10 - 65 + 
@@ -36,7 +44,6 @@
     DUP 0  ?DO PLUCK I DUMP-LINE-LEN * + DUMP-LINE-LEN NDUMP CR LOOP 
     PLUCK OVER DUMP-LINE-LEN * + PLUCK NDUMP 
     DROP DROP DROP ;
-
 
 
 \ : FS 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 ;
