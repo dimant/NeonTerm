@@ -49,7 +49,8 @@ CREATE rloc 2 ALLOT DROP DOES> @ ; 3 1 rloc 2!
     rloc 2@ rmult UM* ROT 0 D+ OVER rloc 2! ;
 
 \ random integer from 0 to n-1
-: random ( n -- 0..n-1 )  rndm UM* NIP ;
+: random ( n -- 0..n-1 )
+    rndm UM* NIP ;
 
 \ reseed randomly by exercising rndm a few times
 : randomize  ( -- )
