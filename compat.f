@@ -1,6 +1,6 @@
 : CMOVE ( c-addr1 c-addr2 n -- )
     0 ?DO
-        OVER I + @ OVER I + !
+        OVER I + C@ OVER I + C!
     LOOP
     DROP DROP ;
 
