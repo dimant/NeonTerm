@@ -12,7 +12,7 @@
 
 : MOD ( a b -- m ) 0 SWAP UM/MOD ; ( 16bit mod operation )
 
-\ DECIMAL
+DECIMAL
 
 : 4BITHEX ( a -- c )
     DUP 9 > IF 10 - 65 + 
