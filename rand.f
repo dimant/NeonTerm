@@ -45,7 +45,7 @@ HEX
 \ any seed values should be ok
 CREATE rloc 2 ALLOT DROP DOES> @ ; 3 1 rloc 2!
 
-: rndm  ( -- u )   \ returns one cell full of random bits
+: rndm  ( -- u ) \ returns one cell full of random bits
     rloc 2@ rmult UM* ROT 0 D+ OVER rloc 2! ;
 
 \ random integer from 0 to n-1
@@ -55,6 +55,6 @@ CREATE rloc 2 ALLOT DROP DOES> @ ; 3 1 rloc 2!
 \ reseed randomly by exercising rndm a few times
 : randomize  ( -- )
     GETRTC ( day hour min sec ms us )
-    + + + 0 DO  rndm DROP  LOOP                  
-    rndm rndm  rloc 2! 
+    + + + 0 DO  rndm DROP LOOP
+    rndm rndm  rloc 2!
     DROP DROP ;
