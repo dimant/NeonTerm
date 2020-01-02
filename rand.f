@@ -39,7 +39,6 @@
 HEX
 
 \ other good multipliers for 16-bit systems are 61BF 62DC 6594 6363 5E9B
-
 65E8 CONSTANT rmult
 
 \ any seed values should be ok
