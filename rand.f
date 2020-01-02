@@ -43,7 +43,7 @@ HEX
 65E8 CONSTANT rmult
 
 \ any seed values should be ok
-CREATE rloc 2 ALLOT DROP DOES> @ ; 3 1 rloc 2!
+CREATE rloc 2 CELLS ALLOT DROP DOES> @ ; 3 1 rloc 2!
 
 : rndm  ( -- u ) \ returns one cell full of random bits
     rloc 2@ rmult UM* ROT 0 D+ OVER rloc 2! ;

@@ -123,6 +123,8 @@
                     }
                 }
 
+                neonWriter.WriteChar('\n');
+
                 neonWriter.WaitOnQueueDrained(cancellationToken);
                 neonReader.Cancel();
             }

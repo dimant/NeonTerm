@@ -10,7 +10,8 @@
 
 : 2@ DUP CELL+ @ SWAP @ ;
 
-: MOD ( a b -- m ) 0 SWAP UM/MOD ; ( 16bit mod operation )
+: MOD ( a b -- m ; 16bit mod operation )
+    0 SWAP UM/MOD ;
 
 DECIMAL
 
