@@ -21,36 +21,35 @@ VARIABLE CURRENT-TEST 0 CURRENT-TEST !
 VARIABLE ACTUAL-DEPTH 0 ACTUAL-DEPTH !
 CREATE ACTUAL-RESULTS 20 CELLS ALLOT DROP
 
-: EMPTY-STACK ( ... -- ) \ EMPTY STACK: HANDLES UNDERFLOWED STACK TOO.
+: EMPTY-STACK ( ... -- ) \ handles underflowed stack too
    DEPTH ?DUP IF DUP 0< IF NEGATE 0 DO 0 LOOP ELSE 0 DO DROP LOOP THEN THEN ;
 
 : ERROR      \ ( ... -- )
    ." IN TEST" SPACE CURRENT-TEST @ .
-   EMPTY-STACK               \ THROW AWAY EVERY THING ELSE
+   EMPTY-STACK \ throw away everything else
    #ERRORS @ 1 + #ERRORS !
    0 CURRENT-TEST !
-   QUIT  \ *** Uncomment this line to QUIT on an error
+   QUIT
 ;
 
 : T{
       CURRENT-TEST @ 1+ CURRENT-TEST !
    ;
 
-: ->      \ ( ... -- ) RECORD DEPTH AND CONTENT OF STACK.
-   DEPTH DUP ACTUAL-DEPTH !      \ RECORD DEPTH
-   ?DUP IF            \ IF THERE IS SOMETHING ON STACK
-      0 DO ACTUAL-RESULTS I CELLS + ! LOOP \ SAVE THEM
+: -> ( ... -- ) \ record depth and content of stack
+   DEPTH DUP ACTUAL-DEPTH !
+   ?DUP IF \ If there is something on the stack,
+      0 DO ACTUAL-RESULTS I CELLS + ! LOOP \ save to actual results
    THEN ;
 
-: }T      \ ( ... -- ) COMPARE STACK (EXPECTED) CONTENTS WITH SAVED
-      \ (ACTUAL) CONTENTS.
-   DEPTH ACTUAL-DEPTH @ = IF      \ IF DEPTHS MATCH
-      DEPTH ?DUP IF         \ IF THERE IS SOMETHING ON THE STACK
-         0  DO            \ FOR EACH STACK ITEM
-           ACTUAL-RESULTS I CELLS + @   \ COMPARE ACTUAL WITH EXPECTED
+: }T \ ( ... -- ) Compare stack expected contents with saved (actual) contents
+   DEPTH ACTUAL-DEPTH @ = IF \ if depths match,
+      DEPTH ?DUP IF \ and there is something on the stack
+         0  DO \ for each cell
+           ACTUAL-RESULTS I CELLS + @ \ compare actual with expected
            = 0= IF ." INCORRECT RESULT " ERROR THEN
          LOOP
       THEN
-   ELSE               \ DEPTH MISMATCH
+   ELSE \ If depths don't match
       ." WRONG NUMBER OF RESULTS " ERROR
    THEN ;
