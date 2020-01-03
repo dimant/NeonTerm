@@ -108,9 +108,9 @@ HEADER MYADD
 
 HEX
 
-HEADER ZERO
-    A9 ,C 00 ,C 00 ,C                                       \ put constant 0x0000 into ACC
+HEADER ONE
+    A9 ,C 01 ,                                              \ put constant 1 (0x0100LE) into ACC
     48 ,C                                                   \ push ACC onto the stack
     B9 ,C 00 ,C 00 ,C C8 ,C C8 ,C 3A ,C 48 ,C 60 ,C 00 ,C   \ tidy up and return
-
-
+   
+    08 ,C                                                   \ push PHP onto the stack
