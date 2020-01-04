@@ -364,17 +364,3 @@ HEX
 : WAI           CB ,C       ; IMMEDIATE \ wait for interrupt
 
 : WDM           42 ,C       ; IMMEDIATE \ reserved for future expansion
-
-\ HEADER CONSTASM
-\     23 LDA-IMM
-\     PHA
-\     ASM-END
-
-\ HEADER ADDASM
-\     PLA
-\     CLC
-\     1 ADC-SR
-\     1 STA-SR
-\     ASM-END
-
-
