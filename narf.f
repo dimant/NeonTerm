@@ -114,3 +114,11 @@ HEADER ONE
     B9 ,C 00 ,C 00 ,C C8 ,C C8 ,C 3A ,C 48 ,C 60 ,C 00 ,C   \ tidy up and return
    
     08 ,C                                                   \ push PHP onto the stack
+
+HEADER ADDASM
+    PLA
+    CLC
+    1 ADC-SR
+    1 STA-SR
+    ASM-END
+

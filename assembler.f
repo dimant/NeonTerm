@@ -1,7 +1,40 @@
 HEX
 
+\ some example programs:
+
+\ HEADER CONSTASM
+\     23 LDA-IMM
+\     PHA
+\     ASM-END
+
+\ HEADER ADDASM
+\     PLA
+\     CLC
+\     1 ADC-SR
+\     1 STA-SR
+\     ASM-END
+
+\ addressing modes:
+\ SR            stack relative
+\ SRIIY         SR indirect indexed Y
+\ DP            direct page
+\ DPIL          DP indirect long
+\ IMM           immediate
+\ ABS           absolute
+\ ABSL          absolute long
+\ DPIX          DP indexed X
+\ DPIY          DP indexed Y
+\ DPIIX         DP indirect indexed X
+\ DPIIY         DP indirect indexed Y
+\ DPILIY        DP indirect long indexed Y
+\ ABSIX         absolute indexed X
+\ ABSIY         absolute indexed Y
+\ ABSLIX        absolute long indexed X
+
+\ branching is program counter relative
+
 \ Tidy up after ASM:
-\ B9 00 00      Reset ACC to 0x0000
+\ B9 00 00      load accumulator from 0x0000 + index Y
 \ C8            increment index register Y
 \ C8            increment index register y
 \ 3A            decrement accumulator
@@ -98,12 +131,17 @@ HEX
 : CPY-DP        C4 ,C ,C    ; IMMEDIATE
 : CPY-ABS       CC ,C ,     ; IMMEDIATE \ 0x0000LE
 
-\ Test bits
+\ test bits
 : BIT-DP        24 ,C ,C    ; IMMEDIATE
 : BIT-ABS       2C ,C ,     ; IMMEDIATE \ 0x0000LE
 : BIT-DPIX      34 ,C ,C    ; IMMEDIATE
 : BIT-ABSIX     3C ,C ,     ; IMMEDIATE \ 0x0000LE
 : BIT-IMM       89 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+
+: TRB-DP        14 ,C ,C    ; IMMEDIATE \ test and reset memory bits against accumulator
+: TRB-ABS       1C ,C ,     ; IMMEDIATE \ test and reset memory bits against accumulator
+: TSB-DP        04 ,C ,C    ; IMMEDIATE \ test and set memory bits against accumulator
+: TSB-ABS       0C ,C ,     ; IMMEDIATE \ test and set memory bits against accumulator
 
 \ logical shift right
 : LSR-DP        46 ,C ,C    ; IMMEDIATE
@@ -215,27 +253,60 @@ HEX
 : LDX-DPIY      B6 ,C ,C    ; IMMEDIATE
 : LDX-ABSIY     BE ,C ,     ; IMMEDIATE \ 0x0000LE
 
+\ store index register X to memory
+: STX-DP        86 ,C ,C    ; IMMEDIATE
+: STX-ABS       8E ,C ,     ; IMMEDIATE \ 0x0000LE
+: STX-DPIY      96 ,C ,C    ; IMMEDIATE
+
 \ load index register Y from memory
 : LDY-DP        A4 ,C ,C    ; IMMEDIATE
 : LDY-ABS       AC ,C ,     ; IMMEDIATE \ 0x0000LE
 : LDY-DPIX      B4 ,C ,C    ; IMMEDIATE
 : LDY-IMM       A0 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
 
+\ store index register Y to memory
+: STY-DP        84 ,C ,C    ; IMMEDIATE
+: STY-ABS       8C ,C ,     ; IMMEDIATE \ 0x0000LE
+: STY-DPIY      94 ,C ,C    ; IMMEDIATE
+
+\ store zero to memory
+: STZ-DP        64 ,C ,C    ; IMMEDIATE
+: STZ-DPIX      74 ,C ,C    ; IMMEDIATE
+: STZ-ABS       9C ,C ,     ; IMMEDIATE \ 0x0000LE
+: STZ-ABSIX     9E ,C ,     ; IMMEDIATE \ 0x0000LE
+
+\ transfer data between registers
+: TAX           AA ,C       ; IMMEDIATE \ transfer accumulator to index register X
+: TAY           A8 ,C       ; IMMEDIATE \ transfer accumulator to index register Y
+: TCD           5B ,C       ; IMMEDIATE \ transfer 16bit accumulator to direct page register
+: TCS           1B ,C       ; IMMEDIATE \ transfer 16bit accumulator to stack pointer
+: TDC           7B ,C       ; IMMEDIATE \ transfer direct page register to 16bit accumulator
+: TSC           3B ,C       ; IMMEDIATE \ transfer stack pointer to 16bit accumulator
+: TSX           BA ,C       ; IMMEDIATE \ transfer stack pointer to index register X
+: TXA           8A ,C       ; IMMEDIATE \ transfer index register X to accumulator
+: TXS           9A ,C       ; IMMEDIATE \ transfer index register X to stack pointer
+: TXY           9B ,C       ; IMMEDIATE \ transfer index register X to index register Y
+: TYA           98 ,C       ; IMMEDIATE \ transfer index register Y to accumulator
+: TYX           BB ,C       ; IMMEDIATE \ transfer index register Y to index register X
+
+: XBA           EB ,C       ; IMMEDIATE \ exchange B and A 8bit accumulators
+: XCE           FB ,C       ; IMMEDIATE \ exchange carry and emulation flags
+
 \ block move source, dest
 : MVN           54 ,C ,C ,C ; IMMEDIATE \ block move negative
 : MVP           44 ,C ,C ,C ; IMMEDIATE \ block move positive
 
 \ Branch
-: BLT           90 ,C ,C    ; IMMEDIATE \ branch if carry clear (BCC)
-: BGE           B0 ,C ,C    ; IMMEDIATE \ branch if carry set (BCS)
-: BEQ           F0 ,C ,C    ; IMMEDIATE \ branch if equal
-: BNE           D0 ,C ,C    ; IMMEDIATE \ branch if not equal
-: BMI           30 ,C ,C    ; IMMEDIATE \ branch if minus
-: BPL           10 ,C ,C    ; IMMEDIATE \ branch if plus
-: BRA           80 ,C ,C    ; IMMEDIATE \ branch always
-: BRL           82 ,C ,     ; IMMEDIATE \ branch always long 0x0000LE
-: BVC           50 ,C ,C    ; IMMEDIATE \ branch if overflow clear
-: BVS           70 ,C ,C    ; IMMEDIATE \ branch if overflow set
+: BLT           90 ,C ,C    ; IMMEDIATE \ branch if carry clear (BCC), PC relative
+: BGE           B0 ,C ,C    ; IMMEDIATE \ branch if carry set (BCS), PC relative
+: BEQ           F0 ,C ,C    ; IMMEDIATE \ branch if equal, PC relative
+: BNE           D0 ,C ,C    ; IMMEDIATE \ branch if not equal,  relative
+: BMI           30 ,C ,C    ; IMMEDIATE \ branch if minus, PC relative
+: BPL           10 ,C ,C    ; IMMEDIATE \ branch if plus, PC relative
+: BRA           80 ,C ,C    ; IMMEDIATE \ branch always, PC relative
+: BRL           82 ,C ,     ; IMMEDIATE \ branch always long 0x0000LE, PC relative long
+: BVC           50 ,C ,C    ; IMMEDIATE \ branch if overflow clear, PC relative
+: BVS           70 ,C ,C    ; IMMEDIATE \ branch if overflow set, PC relative
 
 \ jump
 : JMP-ABS       4C ,C ,     ; IMMEDIATE \ 0x0000LE
@@ -294,7 +365,16 @@ HEX
 
 : WDM           42 ,C       ; IMMEDIATE \ reserved for future expansion
 
-HEADER SOMEASM
-    23 LDA-IMM
-    PHA
-    ASM-END
+\ HEADER CONSTASM
+\     23 LDA-IMM
+\     PHA
+\     ASM-END
+
+\ HEADER ADDASM
+\     PLA
+\     CLC
+\     1 ADC-SR
+\     1 STA-SR
+\     ASM-END
+
+
