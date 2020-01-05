@@ -4,7 +4,7 @@
     LOOP
     DROP DROP ;
 
-: (S") R> DUP DUP BEGIN DUP C@ ?DUP WHILE DROP 1+ REPEAT 1+ >R ;
+: (S") R> DUP BEGIN DUP C@ ?DUP WHILE DROP 1+ REPEAT 1+ >R ;
 : S" (lit) ] ' (S") , [ , 22 TIBSPLIT ,S ; IMMEDIATE
 \ : FOO S" foo" TYPE ;
 
