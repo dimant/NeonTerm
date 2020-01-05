@@ -122,3 +122,37 @@ HEADER ADDASM
     1 STA-SR
     ASM-END
 
+\ > ' IF SEE : 4E7 , HERE 0 , 0 ; IMMEDIATE
+
+\ > ' ELSE SEE : DROP 4CD , HERE 0 , SWAP HERE SWAP ! 0 ; IMMEDIATE
+\ > 4CD >NAME TYPE (branch)
+
+\ > ' THEN SEE : DROP HERE SWAP ! ; IMMEDIATE
+\ > 4E7 >NAME TYPE (?branch)
+
+\ > ' (branch) >NAME 30 DUMP 
+\ 04C1 : 28 62 72 61 6E 63 68 29 | ( b r a n c h ) 
+\ 04C9 : 00 00 B2 04 B9 00 00 A8 | . . . . . . . . 
+\ 04D1 : B9 00 00 C8 C8 3A 48 60 | . . . . . : H ` 
+\ 04D9 : 00 28 3F 62 72 61 6E 63 | .
+
+\ B2 04             LDA-DPI 0x04
+\ B9 00 00          LDA-ABSIY 0x0000
+\ A8                TAY
+\ clean up
+
+\ > ' (?branch) >NAME 30 DUMP 
+\ 04DA : 28 3F 62 72 61 6E 63 68 | ( ? b r a n c h 
+\ 04E2 : 29 00 00 CD 04 68 D0 06 | ) . . . . h . . 
+\ 04EA : B9 00 00 A8 80 02 C8 C8 | . . . . . . . . 
+\ 04F2 : B9 00 00 C8 C8 3A 48 60 | . . . . . : H ` 
+\ 04FA : 00 28 64 6F 29 00 00 E7 | .
+
+\ 68                PLA
+\ D0 06             BNE GOTO
+\ B9 00 00          LDA-ABSIY 0x0000
+\ A8                TAY
+\ 80 02             BRA 0x02                # skip next 2 instructions
+\ C8                INY LABEL: GOTO         # go here 
+\ C8                INY
+\ clean up

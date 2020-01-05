@@ -15,21 +15,22 @@ HEX
 \     ASM-END
 
 \ addressing modes:
-\ SR            stack relative
-\ SRIIY         SR indirect indexed Y
-\ DP            direct page
-\ DPIL          DP indirect long
 \ IMM           immediate
 \ ABS           absolute
 \ ABSL          absolute long
+\ ABSIX         absolute indexed X
+\ ABSIY         absolute indexed Y
+\ ALIX          absolute long indexed X
+\ SR            stack relative
+\ SRIIY         SR indirect indexed Y
+\ DP            direct page
+\ DPI           DP indirect
+\ DPIL          DP indirect long
 \ DPIX          DP indexed X
 \ DPIY          DP indexed Y
 \ DPIIX         DP indirect indexed X
 \ DPIIY         DP indirect indexed Y
 \ DPILIY        DP indirect long indexed Y
-\ ABSIX         absolute indexed X
-\ ABSIY         absolute indexed Y
-\ ABSLIX        absolute long indexed X
 
 \ branching is program counter relative
 
@@ -151,7 +152,7 @@ HEX
 : LSR-ABSIX     5E ,C ,     ; IMMEDIATE \ 0x0000LE
 
 : ROL-DP        26 ,C ,C    ; IMMEDIATE
-: ROL           2A ,C       ; IMMEDIATE
+: ROL           2A ,C       ; IMMEDIATE \ rotate accumulator left
 : ROL-ABS       2E ,C ,     ; IMMEDIATE \ 0x0000LE
 : ROL-DPIX      36 ,C ,C    ; IMMEDIATE
 : ROL-ABSIX     3E ,C ,     ; IMMEDIATE \ 0x0000LE
