@@ -69,7 +69,7 @@ HEX
 : INC-ABS       EE ,C ,     ; IMMEDIATE \ 0x0000LE
 : INC-DPIX      F6 ,C ,C    ; IMMEDIATE
 : INC-ABSIX     FE ,C ,     ; IMMEDIATE \ 0x0000LE
-: INX           EB ,C       ; IMMEDIATE \ increment index x
+: INX           E8 ,C       ; IMMEDIATE \ increment index x
 : INY           CB ,C       ; IMMEDIATE \ increment index y
 
 \ Subtract with borrow from accumulator
