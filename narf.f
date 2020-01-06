@@ -156,3 +156,74 @@ HEADER ADDASM
 \ C8                INY LABEL: GOTO         # go here 
 \ C8                INY
 \ clean up
+
+
+\ > ' R> >NAME 20 DUMP 
+\ 0784 : 52 3E 00 00 75 07 E8 BD | R > . . u . . . 
+\ 078C : 00 00 E8 48 B9 00 00 C8 | . . . H . . . . 
+\ 0794 : C8 3A 48 60 00 21 00 00 | . : H ` . ! . . 
+
+\ E8                INX
+\ BD 00 00          LDA-ABSIX 0x0000
+\ E8                INX
+\ 48                PHA
+\ clean up
+
+\ > ' >R >NAME 20 DUMP 
+\ 076F : 3E 52 00 00 5B 07 68 CA | > R . . [ . h . 
+\ 0777 : 9D 00 00 CA B9 00 00 C8 | . . . . . . . . 
+\ 077F : C8 3A 48 60 00 52 3E 00 | . : H ` . R > . 
+
+\ 68                PLA
+\ CA                DEX
+\ 9D 00 00          STA-ABSIX
+\ CA                DEX
+\ clean up
+
+\ > ' (enter) >NAME 20 DUMP 
+\ 0425 : 28 65 6E 74 65 72 29 00 | ( e n t e r ) . 
+\ 042D : 00 00 00 CA 98 9D 00 00 | . . . . . . . . 
+\ 0435 : CA 7A C8 B9 00 00 C8 C8 | . z . . . . . . 
+\ 043D : 3A 48 60 00 28 64 6F 63 | : H ` . ( d o c 
+
+\ CA                DEX
+\ 98                TYA
+\ 9D 00 00          STA-ABSIX
+\ CA                DEX
+\ 7A                PLY
+\ CA                DEX
+\ clean up
+
+\ > ' EXIT >NAME 20 DUMP 
+\ 0493 : 45 58 49 54 00 00 7F 04 | E X I T . . . . 
+\ 049B : E8 BC 00 00 E8 B9 00 00 | . . . . . . . . 
+\ 04A3 : C8 C8 3A 48 60 00 28 6C | . . : H ` . ( l 
+
+\ E8                INX
+\ BC 00 00          LDA-ABSIX 0x0000
+\ E8                INX
+\ clean up
+
+\ > ' DUP >NAME 20 DUMP 
+\ 0603 : 44 55 50 00 00 FE 05 A3 | D U P . . . . . 
+\ 060B : 01 48 B9 00 00 C8 C8 3A | . H . . . . . : 
+\ 0613 : 48 60 00 3F 44 55 50 00 | H ` . ? D U P . 
+
+\ A3 01             LDA-SR
+\ 48                PHA
+\ clean up
+
+
+\ > ' C@ >NAME 20 DUMP 
+\ 080C : 43 40 00 00 FD 07 68 85 | C @ . . . . h . 
+\ 0814 : 00 A9 00 00 E2 20 B2 00 | . . . . .   . . 
+\ 081C : C2 20 48 B9 00 00 C8 C8 | .   H . . . . . 
+\ 0824 : 3A 48 60 00 4C 21 00 00 | : H ` . L ! . . 
+
+\ 68                PLA
+\ 85 00             STA-DP 0x00
+\ A9 00 00          LDA-IMM 0x0000
+\ E2 20             SEP 0010 0000 -> M=1 accumulator register size
+\ B2 00             LDA-DPI 0x00
+\ C2 20             REP 0010 0000 -> M=0 accumulator register size
+\ 48                PHA

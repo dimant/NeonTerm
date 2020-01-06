@@ -52,6 +52,7 @@ HEX
 : ADC-DP        65 ,C ,C    ; IMMEDIATE
 : ADC-DPIL      67 ,C ,C    ; IMMEDIATE
 : ADC-IMM       69 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: ADC-IMM8      69 ,C C,    ; IMMEDIATE \ assuming 8bit mode
 : ADC-ABS       6D ,C ,     ; IMMEDIATE \ 0x0000 LE
 : ADC-ABSL      6F ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : ADC-DPIIY     71 ,C ,C    ; IMMEDIATE
@@ -64,13 +65,13 @@ HEX
 : ADC-ALIX      7F ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 
 \ increment
-: INC-A         1A ,C       ; IMMEDIATE \ increment accumulator
+: INA           1A ,C       ; IMMEDIATE \ increment accumulator
 : INC-DP        E6 ,C ,C    ; IMMEDIATE
 : INC-ABS       EE ,C ,     ; IMMEDIATE \ 0x0000LE
 : INC-DPIX      F6 ,C ,C    ; IMMEDIATE
 : INC-ABSIX     FE ,C ,     ; IMMEDIATE \ 0x0000LE
 : INX           E8 ,C       ; IMMEDIATE \ increment index x
-: INY           CB ,C       ; IMMEDIATE \ increment index y
+: INY           C8 ,C       ; IMMEDIATE \ increment index y
 
 \ Subtract with borrow from accumulator
 : SBC-DPIIX     E1 ,C ,C    ; IMMEDIATE
@@ -78,6 +79,7 @@ HEX
 : SBC-DP        E5 ,C ,C    ; IMMEDIATE
 : SBC-DPIL      E7 ,C ,C    ; IMMEDIATE
 : SBC-IMM       E9 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: SBC-IMM8      E9 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : SBC-ABS       ED ,C ,     ; IMMEDIATE \ 0x0000 LE
 : SBC-ABSL      EF ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : SBC-DPIIY     F1 ,C ,C    ; IMMEDIATE
@@ -90,7 +92,7 @@ HEX
 : SBC-ALIX      FF ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 
 \ decrement
-: DEC-A         3A ,C       ; IMMEDIATE \ decrement accumulator
+: DEA           3A ,C       ; IMMEDIATE \ decrement accumulator
 : DEC-DP        C6 ,C ,C    ; IMMEDIATE
 : DEC-ABS       CE ,C ,     ; IMMEDIATE \ 0x0000LE
 : DEC-DPIX      D6 ,C ,C    ; IMMEDIATE
@@ -110,7 +112,8 @@ HEX
 : CMP-SR        C3 ,C ,C    ; IMMEDIATE
 : CMP-DP        C5 ,C ,C    ; IMMEDIATE
 : CMP-DPIL      C7 ,C ,C    ; IMMEDIATE
-: CMP-IMM       C9 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+: CMP-IMM       C9 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: CMP-IMM8      C9 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : CMP-ABS       CD ,C ,     ; IMMEDIATE \ 0x0000LE
 : CMP-ABSL      CF ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : CMP-DPIIY     D1 ,C ,C    ; IMMEDIATE
@@ -123,12 +126,14 @@ HEX
 : CMP-ALIX      DF ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 
 \ compare index register X with memory
-: CPX-IMM       E0 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+: CPX-IMM       E0 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: CPX-IMM8      E0 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : CPX-DP        E4 ,C ,C    ; IMMEDIATE
 : CPX-ABS       EC ,C ,     ; IMMEDIATE \ 0x0000LE
 
 \ compare index register Y with memory
-: CPY-IMM       C0 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+: CPY-IMM       C0 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: CPY-IMM8      C0 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : CPY-DP        C4 ,C ,C    ; IMMEDIATE
 : CPY-ABS       CC ,C ,     ; IMMEDIATE \ 0x0000LE
 
@@ -137,7 +142,8 @@ HEX
 : BIT-ABS       2C ,C ,     ; IMMEDIATE \ 0x0000LE
 : BIT-DPIX      34 ,C ,C    ; IMMEDIATE
 : BIT-ABSIX     3C ,C ,     ; IMMEDIATE \ 0x0000LE
-: BIT-IMM       89 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+: BIT-IMM       89 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: BIT-IMM8      89 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 
 : TRB-DP        14 ,C ,C    ; IMMEDIATE \ test and reset memory bits against accumulator
 : TRB-ABS       1C ,C ,     ; IMMEDIATE \ test and reset memory bits against accumulator
@@ -169,6 +175,7 @@ HEX
 : AND-DP        25 ,C ,C    ; IMMEDIATE
 : AND-DPIL      27 ,C ,C    ; IMMEDIATE
 : AND-IMM       29 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: AND-IMM8      29 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : AND-ABS       2D ,C ,     ; IMMEDIATE \ 0x0000LE
 : AND-ABSL      2F ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : AND-DPIIY     31 ,C ,C    ; IMMEDIATE
@@ -186,6 +193,7 @@ HEX
 : ORA-DP        05 ,C ,C    ; IMMEDIATE
 : ORA-DPIL      07 ,C ,C    ; IMMEDIATE
 : ORA-IMM       09 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: ORA-IMM8      09 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : ORA-ABS       0D ,C ,     ; IMMEDIATE \ 0x0000LE
 : ORA-ABSL      0F ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : ORA-DPIIY     11 ,C ,C    ; IMMEDIATE
@@ -203,6 +211,7 @@ HEX
 : EOR-DP        45 ,C ,C    ; IMMEDIATE
 : EOR-DPIL      47 ,C ,C    ; IMMEDIATE
 : EOR-IMM       49 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: EOR-IMM8      49 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : EOR-ABS       4D ,C ,     ; IMMEDIATE \ 0x0000LE
 : EOR-ABSL      4F ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : EOR-DPIIY     51 ,C ,C    ; IMMEDIATE
@@ -219,7 +228,8 @@ HEX
 : LDA-SR        A3 ,C ,C    ; IMMEDIATE
 : LDA-DP        A5 ,C ,C    ; IMMEDIATE
 : LDA-DPIL      A7 ,C ,C    ; IMMEDIATE
-: LDA-IMM       A9 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+: LDA-IMM       A9 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: LDA-IMM8      A9 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : LDA-ABS       AD ,C ,     ; IMMEDIATE \ 0x0000LE
 : LDA-ABSL      AF ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : LDA-DPIIY     B1 ,C ,C    ; IMMEDIATE
@@ -236,7 +246,8 @@ HEX
 : STA-SR        83 ,C ,C    ; IMMEDIATE
 : STA-DP        85 ,C ,C    ; IMMEDIATE
 : STA-DPIL      87 ,C ,C    ; IMMEDIATE
-: STA-IMM       89 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+: STA-IMM       89 ,C ,     ; IMMEDIATE \ assuming 16bit mode
+: STA-IMM8      89 ,C ,C    ; IMMEDIATE \ assuming 8bit mode
 : STA-ABS       8D ,C ,     ; IMMEDIATE \ 0x0000LE
 : STA-ABSL      8F ,C ,C ,  ; IMMEDIATE \ 0x00 0x0000LE
 : STA-DPIIY     91 ,C ,C    ; IMMEDIATE
@@ -264,6 +275,7 @@ HEX
 : LDY-ABS       AC ,C ,     ; IMMEDIATE \ 0x0000LE
 : LDY-DPIX      B4 ,C ,C    ; IMMEDIATE
 : LDY-IMM       A0 ,C ,     ; IMMEDIATE \ 0x0000LE assuming 16bit mode
+: LDY-IMM8      A0 ,C ,C    ; IMMEDIATE \ 0x0000LE assuming 8bit mode
 
 \ store index register Y to memory
 : STY-DP        84 ,C ,C    ; IMMEDIATE
